@@ -24,8 +24,8 @@ void setup() {
   Right.attach(7);
   Left.attach(8);
   Base.attach(9);
-  Claw.write(90);
-  Right.write(90);
+  Claw.write(100);
+  Right.write(30);
   Left.write(90);
   Base.write(90);
 
@@ -69,14 +69,6 @@ void Serial_Communication(){
           Speed-=1;
           Serial.print("目前速度为:");
           Serial.println(Speed);
-        }else if(temp=='A'||temp=='a'){
-          Claw_A(); 
-          Serial.println("执行成功!");
-        }else if(temp=='C'||temp=='c'){
-          Claw_C();
-          Serial.println("执行成功!");
-        }else if(temp=='?'){
-          Out_Put();
         }else{
           Serial.println("ERROR,输入有问题");
         }
@@ -217,152 +209,4 @@ int Num_Read(String &line,int &i){
     i++;
   }
   return num;
-}
-
-void Out_Put(){
-  Serial.print("Claw:");
-  Serial.println(Claw.read());
-  Serial.print("Left:");
-  Serial.println(Left.read());
-  Serial.print("Right:");
-  Serial.println(Right.read());
-  Serial.print("Base:");
-  Serial.println(Base.read());
-}
-
-void Claw_A(){
-  Claw.write(60);
-  Right.write(90);
-  Left.write(90);
-  Base.write(90);
-
-  Base_Move(135,Speed);
-  delay(500);
-  Left_Move(15,Speed);
-  Right_Move(150,Speed);
-  delay(500);
-  Claw_Move(140,3);
-  delay(500);
-
-  Right_Move(100,Speed);
-  delay(500);
-  Left_Move(30,Speed);
-  delay(500);
-  Base_Move(45,Speed);
-  delay(500);
-
-  Left_Move(15,Speed);
-  delay(500);
-  Right_Move(150,Speed);
-  delay(500);
-  Claw_Move(60,3);
-  delay(500);
-
-  Right_Move(90,Speed);
-  Left_Move(90,Speed);
-  delay(500);
-  Base_Move(90,Speed);
-}
-
-void Claw_C(){
-  Claw.write(30);
-  Right.write(90);
-  Left.write(90);
-  Base.write(90);
-
-  Base_Move(30,Speed);
-  delay(500);
-  Left_Move(15,Speed);
-  Right_Move(150,Speed);
-  delay(500);
-  Claw_Move(140,3);
-  delay(500);
-
-  Right_Move(100,Speed);
-  delay(500);
-  Left_Move(30,Speed);
-  delay(500);
-  Base_Move(150,Speed);
-  delay(500);
-
-  Left_Move(15,Speed);
-  delay(500);
-  Right_Move(150,Speed);
-  delay(500);
-  Claw_Move(30,3);
-  delay(500);
-
-  Right_Move(90,Speed);
-  Left_Move(90,Speed);
-  delay(500);
-  Base_Move(90,Speed);
-  Claw_Move(60,Speed);
-}
-
-void Base_Move(int target,int MoveSpeed){
-  int now=Base.read();
-  if(now<target){
-    while(now<target){
-      now=Base.read();
-      Base.write(now+MoveSpeed);
-      delay(100);
-    }
-  }else{
-    while(now>target){
-      now=Base.read();
-      Base.write(now-MoveSpeed);
-      delay(100);
-    }
-  }
-}
-
-void Left_Move(int target,int MoveSpeed){
-  int now=Left.read();
-  if(now<target){
-    while(now<target){
-      now=Left.read();
-      Left.write(now+MoveSpeed);
-      delay(100);
-    }
-  }else{
-    while(now>target){
-      now=Left.read();
-      Left.write(now-MoveSpeed);
-      delay(100);
-    }
-  }
-}
-
-void Right_Move(int target,int MoveSpeed){
-  int now=Right.read();
-  if(now<target){
-    while(now<target){
-      now=Right.read();
-      Right.write(now+MoveSpeed);
-      delay(100);
-    }
-  }else{
-    while(now>target){
-      now=Right.read();
-      Right.write(now-MoveSpeed);
-      delay(100);
-    }
-  }
-}
-
-void Claw_Move(int target,int MoveSpeed){
-  int now=Claw.read();
-  if(now<target){
-    while(now<target){
-      now=Claw.read();
-      Claw.write(now+MoveSpeed);
-      delay(100);
-    }
-  }else{
-    while(now>target){
-      now=Claw.read();
-      Claw.write(now-MoveSpeed);
-      delay(100);
-    }
-  }
 }
