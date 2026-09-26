@@ -25,7 +25,7 @@ void setup() {
   Left.attach(8);
   Base.attach(9);
   Claw.write(100);
-  Right.write(60);
+  Right.write(30);
   Left.write(90);
   Base.write(90);
 
@@ -92,15 +92,15 @@ bool PWM_Out(String &line){
     return 0;
   }else{
     int i=0;
-    if(line[i]=='x'){
+    if(line[i]=='X'||line[i]=='x'){
       x=Num_Read(line,++i);
       if(line[i]==',')
-      if(line[++i]=='y'){
+      if(line[++i]=='Y'||line[++i]=='y'){
         y=Num_Read(line,++i);
         if(line[i]==',')
-        if(line[++i]=='z'){
+        if(line[++i]=='Z'||line[++i]=='z'){
           z=Num_Read(line,++i);
-          if(x<=180&&y<=180&&z<=180){
+          if((x>=0&&x<=180)&&(y>=0&&y<=120)&&(z>=30&&z<=150)){
             Base.write(x);
             Left.write(y);
             Right.write(z);
@@ -122,33 +122,82 @@ void Servo_Bool(){
   int Rx=analogRead(Right_Joystick_x);
   int Ry=analogRead(Right_Joystick_y);
 
+  int Base_read=Base.read();
+  int Left_read=Left.read();
+  int Right_read=Right.read();
+  int Claw_read=Claw.read();
+
   if(Lx<=200){
-    Base.write(Base.read()+Speed);
-    delay(50);
+    if(Base_read>=180){
+      Serial.println("Base电机到限制了!!!");
+      delay(50);
+    }else{
+      Base.write(Base_read+Speed);
+      delay(50);
+    }
   }else if(Lx>=800){
-    Base.write(Base.read()-Speed);
-    delay(50);
+    if(Base_read<=0){
+      Serial.println("Base电机到限制了!!!");
+      delay(50);
+    }else{
+      Base.write(Base_read-Speed);
+      delay(50);
+    }
+    
   }
+
   if(Ly<=200){
-    Right.write(Right.read()+Speed);
-    delay(50);
+    if(Right_read>=150){
+      Serial.println("Right电机到限制了!!!");
+      delay(50);
+    }else{
+      Right.write(Right_read+Speed);
+      delay(50);
+    }
   }else if(Ly>=800){
-    Right.write(Right.read()-Speed);
-    delay(50);
+    if(Right_read<=30){
+      Serial.println("Right电机到限制了!!!");
+      delay(50);
+    }else{
+      Right.write(Right_read-Speed);
+      delay(50);
+    }
   }
+
   if(Rx<=200){
-    Claw.write(Claw.read()-Speed);
-    delay(50);
+    if(Claw_read<=0){
+      Serial.println("Claw电机到限制了!!!");
+      delay(50);
+    }else{
+      Claw.write(Claw_read-Speed);
+      delay(50);
+    }
   }else if(Rx>=800){
-    Claw.write(Claw.read()+Speed);
-    delay(50);
+    if(Claw_read>=120){
+      Serial.println("Claw电机到限制了!!!");
+      delay(50);
+    }else{
+      Claw.write(Claw_read+Speed);
+      delay(50);
+    }
   }
+
   if(Ry<=200){
-    Left.write(Left.read()-Speed);
-    delay(50);
+    if(Left_read<=0){
+      Serial.println("Left电机到限制了!!!");
+      delay(50);
+    }else{
+      Left.write(Left_read-Speed);
+      delay(50);
+    }
   }else if(Ry>=800){
-    Left.write(Left.read()+Speed);
-    delay(50);
+    if(Left_read>=120){
+      Serial.println("Left电机到限制了!!!");
+      delay(50);
+    }else{
+      Left.write(Left_read+Speed);
+      delay(50);
+    }
   }
 }
 
