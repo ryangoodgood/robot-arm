@@ -8,8 +8,8 @@ extern Servo Base;
 
 extern int Speed; 
 
-void Base_Move(int target,int MoveSpeed){
-  int now=Base.read();
+void Base_Move(byte target,byte MoveSpeed){
+  byte now=Base.read();
   if(now<target){
     while(now<target){
       now=Base.read();
@@ -25,8 +25,8 @@ void Base_Move(int target,int MoveSpeed){
   }
 }
 
-void Left_Move(int target,int MoveSpeed){
-  int now=Left.read();
+void Left_Move(byte target,byte MoveSpeed){
+  byte now=Left.read();
   if(now<target){
     while(now<target){
       now=Left.read();
@@ -42,8 +42,8 @@ void Left_Move(int target,int MoveSpeed){
   }
 }
 
-void Right_Move(int target,int MoveSpeed){
-  int now=Right.read();
+void Right_Move(byte target,byte MoveSpeed){
+  byte now=Right.read();
   if(now<target){
     while(now<target){
       now=Right.read();
@@ -59,8 +59,8 @@ void Right_Move(int target,int MoveSpeed){
   }
 }
 
-void Claw_Move(int target,int MoveSpeed){
-  int now=Claw.read();
+void Claw_Move(byte target,byte MoveSpeed){
+  byte now=Claw.read();
   if(now<target){
     while(now<target){
       now=Claw.read();

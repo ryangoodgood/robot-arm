@@ -3,14 +3,12 @@
 
 #include "Servo_Move.h"
 #include "Claw_Grab.h"
+#include "Joystick_Control.h"
+#include "Record_Replay.h"
+#include "Button_Control.h"
 
 #define LEFT_BUTTON 5
 #define RIGHT_BUTTON 4
-
-#define Left_Joystick_x A0
-#define Left_Joystick_y A1
-#define Right_Joystick_x A2
-#define Right_Joystick_y A3
 
 Servo Claw;
 Servo Left;
@@ -22,13 +20,13 @@ int Speed;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  Record_Clear();
 
   Claw.attach(6);
   Right.attach(7);
   Left.attach(8);
   Base.attach(9);
-  Claw.write(100);
-  Right.write(30);
+
   Claw.write(90);
   Right.write(90);
   Left.write(90);
@@ -39,19 +37,13 @@ void setup() {
 
   Speed=5;
 
-  Serial.println("请输入指令");
-  Serial.println("'O',打开爪子");
-  Serial.println("'S',关闭爪子");
-  Serial.println("'H',嗨嗨嗨,要开始加速喽");
-  Serial.println("'L',呜呜呜,要开始减速了");
-  Serial.println("'A','B','C',三个夹取物体");
+  text_print();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   Serial_Communication();
-  Servo_Bool();
-
+  Joystick_Control();
 }
 
 void Serial_Communication(){
@@ -59,48 +51,51 @@ void Serial_Communication(){
   char temp;
   if(Serial.available()){
       line=Serial.readStringUntil('\n');
+      line.trim();
       if(line.length()==1){
         temp=line[0];
-        if(temp=='O'||temp=='o'){
+        if(temp=='1'||temp=='2'||temp=='3'||temp=='4'){
+          Button_Control((byte)temp-'0');
+        }else if(temp=='O'||temp=='o'){
           Claw.write(0);
-          Serial.println("恭喜你,爪子打开了!");
+          Serial.println(F("恭喜你,爪子打开了!"));
         }else if(temp=='S'||temp=='s'){
           Claw.write(115);
-          Serial.println("恭喜你,爪子关上了!");
+          Serial.println(F("恭喜你,爪子关上了!"));
         }else if(temp=='H'||temp=='h'){
           Speed+=1;
-          Serial.print("目前速度为:");
+          Serial.print(F("目前速度为:"));
           Serial.println(Speed);
         }else if(temp=='L'||temp=='l'){
           Speed-=1;
-          Serial.print("目前速度为:");
+          Serial.print(F("目前速度为:"));
           Serial.println(Speed);
         }else if(temp=='A'||temp=='a'){
           Claw_A(); 
-          Serial.println("执行成功!");
+          Serial.println(F("执行成功!"));
         }else if(temp=='B'||temp=='b'){
           Claw_B();
-          Serial.println("执行成功!");
+          Serial.println(F("执行成功!"));
         }else if(temp=='C'||temp=='c'){
           Claw_C();
-          Serial.println("执行成功!");
+          Serial.println(F("执行成功!"));
         }else if(temp=='?'){
           Out_Put();
         }else{
-          Serial.println("ERROR,输入有问题");
+          Serial.println(F("ERROR,输入有问题"));
         }
       }else{
         if(!PWM_Out(line)){
-          Serial.println("Error,请输入一个字符");
+          Serial.println(F("Error,请输入一个字符"));
         }
       }
       Serial.println("");
-      Serial.println("请输入指令");
-      Serial.println("'O',打开爪子");
-      Serial.println("'S',关闭爪子");
-      Serial.println("'H',嗨嗨嗨,要开始加速喽");
-      Serial.println("'L',呜呜呜,要开始减速了");
-      Serial.println("'A','B','C',三个夹取物体");
+      text_print();
+
+  }
+  if(Speed<=0){
+    Speed=1;
+    Serial.println(F("Speed不能小于等于0!!!"));
   }
 }
 
@@ -109,22 +104,22 @@ bool PWM_Out(String &line){
   if(line.length()>15){
     return 0;
   }else{
-    int i=0;
+    byte i=0;
     if(line[i]=='X'||line[i]=='x'){
       x=Num_Read(line,++i);
-      if(line[i]==',')
-      if(line[++i]=='Y'||line[++i]=='y'){
+      if(line[i++]==',')
+      if(line[i]=='Y'||line[i]=='y'){
         y=Num_Read(line,++i);
-        if(line[i]==',')
-        if(line[++i]=='Z'||line[++i]=='z'){
+        if(line[i++]==',')
+        if(line[i]=='Z'||line[i]=='z'){
           z=Num_Read(line,++i);
           if((x>=0&&x<=180)&&(y>=0&&y<=120)&&(z>=30&&z<=150)){
             Base.write(x);
             Left.write(y);
             Right.write(z);
-            Serial.println("执行成功了,你太棒了!");
+            Serial.println(F("执行成功了,你太棒了!"));
           }else{
-            Serial.println("我chovy,不要乱输入啊!");
+            Serial.println(F("我chovy,不要乱输入啊!"));
           }
           return 1;
         }
@@ -134,92 +129,7 @@ bool PWM_Out(String &line){
   return 0;
 }
 
-void Servo_Bool(){
-  int Lx=analogRead(Left_Joystick_x);
-  int Ly=analogRead(Left_Joystick_y);
-  int Rx=analogRead(Right_Joystick_x);
-  int Ry=analogRead(Right_Joystick_y);
-
-  int Base_read=Base.read();
-  int Left_read=Left.read();
-  int Right_read=Right.read();
-  int Claw_read=Claw.read();
-
-  if(Lx<=200){
-    if(Base_read>=180){
-      Serial.println("Base电机到限制了!!!");
-      delay(50);
-    }else{
-      Base.write(Base_read+Speed);
-      delay(50);
-    }
-  }else if(Lx>=800){
-    if(Base_read<=0){
-      Serial.println("Base电机到限制了!!!");
-      delay(50);
-    }else{
-      Base.write(Base_read-Speed);
-      delay(50);
-    }
-
-  }
-
-  if(Ly<=200){
-    if(Right_read>=150){
-      Serial.println("Right电机到限制了!!!");
-      delay(50);
-    }else{
-      Right.write(Right_read+Speed);
-      delay(50);
-    }
-  }else if(Ly>=800){
-    if(Right_read<=30){
-      Serial.println("Right电机到限制了!!!");
-      delay(50);
-    }else{
-      Right.write(Right_read-Speed);
-      delay(50);
-    }
-  }
-
-  if(Rx<=200){
-    if(Claw_read<=0){
-      Serial.println("Claw电机到限制了!!!");
-      delay(50);
-    }else{
-      Claw.write(Claw_read-Speed);
-      delay(50);
-    }
-  }else if(Rx>=800){
-    if(Claw_read>=120){
-      Serial.println("Claw电机到限制了!!!");
-      delay(50);
-    }else{
-      Claw.write(Claw_read+Speed);
-      delay(50);
-    }
-  }
-
-  if(Ry<=200){
-    if(Left_read<=0){
-      Serial.println("Left电机到限制了!!!");
-      delay(50);
-    }else{
-      Left.write(Left_read-Speed);
-      delay(50);
-    }
-  }else if(Ry>=800){
-    if(Left_read>=120){
-      Serial.println("Left电机到限制了!!!");
-      delay(50);
-    }else{
-      Left.write(Left_read+Speed);
-      delay(50);
-    }
-  }
-}
-
-int Num_Read(String &line,int &i){
+int Num_Read(String &line,byte &i){
   int num=0;
   while(line[i]>='0'&&line[i]<='9'){
     num*=10;
@@ -230,12 +140,25 @@ int Num_Read(String &line,int &i){
 }
 
 void Out_Put(){
-  Serial.print("Claw:");
+  Serial.print(F("Claw:"));
   Serial.println(Claw.read());
-  Serial.print("Left:");
+  Serial.print(F("Left:"));
   Serial.println(Left.read());
-  Serial.print("Right:");
+  Serial.print(F("Right:"));
   Serial.println(Right.read());
-  Serial.print("Base:");
+  Serial.print(F("Base:"));
   Serial.println(Base.read());
+}
+
+void text_print(){
+  Serial.println(F("请输入指令"));
+  Serial.println(F("'O',打开爪子"));
+  Serial.println(F("'S',关闭爪子"));
+  Serial.println(F("'H',嗨嗨嗨,要开始加速喽"));
+  Serial.println(F("'L',呜呜呜,要开始减速了"));
+  Serial.println(F("'A','B','C',三个夹取物体"));
+  Serial.println(F("按钮1:A,B,C循环"));
+  Serial.println(F("按钮2:录制动作"));
+  Serial.println(F("按钮3:回放动作"));
+  Serial.println(F("按钮4:重置位置"));
 }
