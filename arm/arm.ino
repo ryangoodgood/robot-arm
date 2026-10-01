@@ -91,7 +91,6 @@ void Serial_Communication(){
       }
       Serial.println("");
       text_print();
-
   }
   if(Speed<=0){
     Speed=1;
