@@ -54,35 +54,66 @@ void Serial_Communication(){
       line.trim();
       if(line.length()==1){
         temp=line[0];
-        if(temp=='1'||temp=='2'||temp=='3'||temp=='4'){
-          Button_Control((byte)temp-'0');
-        }else if(temp=='O'||temp=='o'){
-          Claw.write(0);
-          Serial.println(F("恭喜你,爪子打开了!"));
-        }else if(temp=='S'||temp=='s'){
-          Claw.write(115);
-          Serial.println(F("恭喜你,爪子关上了!"));
-        }else if(temp=='H'||temp=='h'){
-          Speed+=1;
-          Serial.print(F("目前速度为:"));
-          Serial.println(Speed);
-        }else if(temp=='L'||temp=='l'){
-          Speed-=1;
-          Serial.print(F("目前速度为:"));
-          Serial.println(Speed);
-        }else if(temp=='A'||temp=='a'){
-          Claw_A(); 
-          Serial.println(F("执行成功!"));
-        }else if(temp=='B'||temp=='b'){
-          Claw_B();
-          Serial.println(F("执行成功!"));
-        }else if(temp=='C'||temp=='c'){
-          Claw_C();
-          Serial.println(F("执行成功!"));
-        }else if(temp=='?'){
-          Out_Put();
-        }else{
-          Serial.println(F("ERROR,输入有问题"));
+        switch(temp){
+          case '1':
+          case '2':
+          case '3':
+          case '4':
+            Button_Control((byte)(temp-'0'));
+            break;
+
+          case 'O':
+          case 'o':
+            Claw.write(0);
+            Serial.println(F("恭喜你,爪子打开了!"));
+            break;
+
+          case 'S':
+          case 's':
+            Claw.write(115);
+            Serial.println(F("恭喜你,爪子关上了!"));
+            break;
+
+          case 'H':
+          case 'h':
+            Speed+=1;
+            Serial.print(F("目前速度为:"));
+            Serial.println(Speed);
+            break;
+
+          case 'L':
+          case 'l':
+            Speed-=1;
+            Serial.print(F("目前速度为:"));
+            Serial.println(Speed);
+            break;
+
+          case 'A':
+          case 'a':
+            Claw_A(); 
+            Serial.println(F("执行成功!"));
+            break;
+
+          case 'B':
+          case 'b':
+            Claw_B(); 
+            Serial.println(F("执行成功!"));
+            break;
+
+          case 'C':
+          case 'c':
+            Claw_C(); 
+            Serial.println(F("执行成功!"));
+            break;
+
+          case '?':
+            Out_Put();
+            break;
+
+          default:
+            Serial.println(F("ERROR,输入有问题"));
+            break;
+            
         }
       }else{
         if(!PWM_Out(line)){

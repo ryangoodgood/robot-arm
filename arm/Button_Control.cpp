@@ -12,18 +12,27 @@ extern Servo Base;
 extern int Speed;
 
 void Button_Control(byte read){
-  if(read==1){
-    Claw_A();
-    Claw_B();
-    Claw_C();
-  }else if(read==2){
-    Record();
-  }else if(read==3){
-    Replay();
-  }else if(read==4){
-    Claw.write(90);
-    Right.write(90);
-    Left.write(90);
-    Base.write(90);
+  switch(read){
+    case 1:
+      Claw_A();
+      Claw_B();
+      Claw_C();
+      break;
+
+    case 2:
+      Record();
+      break;
+
+    case 3:
+      Replay();
+      break;
+
+    case 4:
+      Claw.write(90);
+      Right.write(90);
+      Left.write(90);
+      Base.write(90);
+      break;
+
   }
 }
