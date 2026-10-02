@@ -40,7 +40,6 @@ void Joystick_Control(){
       Base.write(Base_read-Speed);
       delay(50);
     }
-
   }
 
   if(Ly<=200){

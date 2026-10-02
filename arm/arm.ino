@@ -84,6 +84,10 @@ void Serial_Communication(){
           case 'L':
           case 'l':
             Speed-=1;
+            if(Speed<=0){
+              Speed=1;
+              Serial.println(F("Speed不能小于等于0!!!"));
+            }
             Serial.print(F("目前速度为:"));
             Serial.println(Speed);
             break;
@@ -122,10 +126,6 @@ void Serial_Communication(){
       }
       Serial.println("");
       text_print();
-  }
-  if(Speed<=0){
-    Speed=1;
-    Serial.println(F("Speed不能小于等于0!!!"));
   }
 }
 
