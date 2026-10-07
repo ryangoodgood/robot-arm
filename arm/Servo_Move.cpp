@@ -23,6 +23,7 @@ void Base_Move(byte target,byte MoveSpeed){
       delay(100);
     }
   }
+  Base.write(target);
 }
 
 void Left_Move(byte target,byte MoveSpeed){
@@ -40,6 +41,7 @@ void Left_Move(byte target,byte MoveSpeed){
       delay(100);
     }
   }
+  Left.write(target);
 }
 
 void Right_Move(byte target,byte MoveSpeed){
@@ -57,6 +59,7 @@ void Right_Move(byte target,byte MoveSpeed){
       delay(100);
     }
   }
+  Right.write(target);
 }
 
 void Claw_Move(byte target,byte MoveSpeed){
@@ -74,4 +77,5 @@ void Claw_Move(byte target,byte MoveSpeed){
       delay(100);
     }
   }
+  Claw.write(target);
 }

@@ -31,72 +31,56 @@ void Joystick_Control(){
   if(Lx<=200){
     if(Base_read>=180){
       Serial.println(F("Base电机到限制了!!!"));
-      delay(50);
     }else{
       Base.write(Base_read+Speed);
-      delay(50);
     }
   }else if(Lx>=800){
     if(Base_read<=0){
       Serial.println(F("Base电机到限制了!!!"));
-      delay(50);
     }else{
       Base.write(Base_read-Speed);
-      delay(50);
     }
   }
 
   if(Ly<=200){
     if(Right_read>=150){
       Serial.println(F("Right电机到限制了!!!"));
-      delay(50);
     }else{
       Right.write(Right_read+Speed);
-      delay(50);
     }
   }else if(Ly>=800){
     if(Right_read<=30){
       Serial.println(F("Right电机到限制了!!!"));
-      delay(50);
     }else{
       Right.write(Right_read-Speed);
-      delay(50);
     }
   }
 
   if(Rx<=200){
     if(Claw_read<=0){
       Serial.println(F("Claw电机到限制了!!!"));
-      delay(50);
     }else{
       Claw.write(Claw_read-Speed);
-      delay(50);
     }
   }else if(Rx>=800){
     if(Claw_read>=120){
       Serial.println(F("Claw电机到限制了!!!"));
-      delay(50);
     }else{
       Claw.write(Claw_read+Speed);
-      delay(50);
     }
   }
 
   if(Ry<=200){
     if(Left_read<=0){
       Serial.println(F("Left电机到限制了!!!"));
-      delay(50);
     }else{
       Left.write(Left_read-Speed);
-      delay(50);
     }
   }else if(Ry>=800){
     if(Left_read>=120){
       Serial.println(F("Left电机到限制了!!!"));
-      delay(50);
     }else{
       Left.write(Left_read+Speed);
-      delay(50);
     }
   }
 }

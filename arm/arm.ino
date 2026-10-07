@@ -6,6 +6,7 @@
 #include "Joystick_Control.h"
 #include "Record_Replay.h"
 #include "Button_Control.h"
+#include "Print.h"
 
 #define LEFT_BUTTON 5
 #define RIGHT_BUTTON 4
@@ -44,6 +45,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   Serial_Communication();
   Joystick_Control();
+  delay(50);
 }
 
 void Serial_Communication(){
@@ -110,8 +112,16 @@ void Serial_Communication(){
             Serial.println(F("执行成功!"));
             break;
 
+          case 'p':
+            Straight_Draw();
+            break;
+
           case '?':
             Out_Put();
+            break;
+            
+          case '!':
+            seread();
             break;
 
           default:
