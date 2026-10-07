@@ -11,12 +11,27 @@ extern Servo Base;
 
 extern int Speed;
 
+byte mode=0;
+
 void Button_Control(byte read){
   switch(read){
     case 1:
-      Claw_A();
-      Claw_B();
-      Claw_C();
+      switch(mode){
+        case 0:
+          Claw_A();
+          break;
+
+        case 1:
+          Claw_B();
+          break;
+
+        case 2:
+          Claw_C();
+          break;
+      }
+      if(++mode==3){
+        mode=0;
+      }
       break;
 
     case 2:

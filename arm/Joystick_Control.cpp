@@ -13,16 +13,20 @@ extern Servo Base;
 
 extern int Speed;
 
-void Joystick_Control(){
-  int Lx=analogRead(Left_Joystick_x);
-  int Ly=analogRead(Left_Joystick_y);
-  int Rx=analogRead(Right_Joystick_x);
-  int Ry=analogRead(Right_Joystick_y);
+int Lx,Ly,Rx,Ry;
 
-  int Base_read=Base.read();
-  int Left_read=Left.read();
-  int Right_read=Right.read();
-  int Claw_read=Claw.read();
+int Base_read,Left_read,Right_read,Claw_read;
+
+void Joystick_Control(){
+  Lx=analogRead(Left_Joystick_x);
+  Ly=analogRead(Left_Joystick_y);
+  Rx=analogRead(Right_Joystick_x);
+  Ry=analogRead(Right_Joystick_y);
+
+  Base_read=Base.read();
+  Left_read=Left.read();
+  Right_read=Right.read();
+  Claw_read=Claw.read();
 
   if(Lx<=200){
     if(Base_read>=180){

@@ -38,7 +38,7 @@ void Record(){
     Right_State[total_time]=Right.read();
     Claw_State[total_time]=Claw.read();
     total_time++;
-    delay(75);
+    delay(50);
     if(Serial.available()){
       if(Serial.read()=='2'){
         break;
@@ -56,7 +56,7 @@ void Replay(){
     Left.write(Left_State[i]);
     Right.write(Right_State[i]);
     Claw.write(Claw_State[i]);
-    delay(75);
+    delay(50);
     i++;
   }
   Serial.println(F("回放结束"));
