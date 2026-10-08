@@ -18,6 +18,8 @@ Servo Base;
 
 int Speed;
 
+extern double x,y,z;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -37,6 +39,8 @@ void setup() {
   pinMode(RIGHT_BUTTON,INPUT_PULLUP);
 
   Speed=5;
+
+  seread();
 
   text_print();
 }
@@ -79,6 +83,10 @@ void Serial_Communication(){
           case 'H':
           case 'h':
             Speed+=1;
+            if(Speed>30){
+              Speed=30;
+              Serial.println(F("太快了舵机要受不了了!!!"));
+            }
             Serial.print(F("目前速度为:"));
             Serial.println(Speed);
             break;
@@ -122,6 +130,12 @@ void Serial_Communication(){
             
           case '!':
             seread();
+            Serial.print(F("x:"));
+            Serial.println(x);
+            Serial.print(F("y:"));
+            Serial.println(y);
+            Serial.print(F("z:"));
+            Serial.println(z);
             break;
 
           default:
@@ -153,7 +167,7 @@ bool PWM_Out(String &line){
         if(line[i++]==',')
         if(line[i]=='Z'||line[i]=='z'){
           z=Num_Read(line,++i);
-          if((x>=0&&x<=180)&&(y>=0&&y<=120)&&(z>=30&&z<=150)){
+          if((x>=0&&x<=180)&&(y>=0&&y<=100)&&(z>=30&&z<=150)){
             Base.write(x);
             Left.write(y);
             Right.write(z);

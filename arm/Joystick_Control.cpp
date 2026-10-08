@@ -77,7 +77,7 @@ void Joystick_Control(){
       Left.write(Left_read-Speed);
     }
   }else if(Ry>=800){
-    if(Left_read>=120){
+    if(Left_read>=100){
       Serial.println(F("Left电机到限制了!!!"));
     }else{
       Left.write(Left_read+Speed);
