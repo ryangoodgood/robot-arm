@@ -122,6 +122,18 @@ void Serial_Communication(){
 
           case 'p':
             Straight_Draw();
+            Claw.write(90);
+            Right.write(90);
+            Left.write(90);
+             Base.write(90);
+            break;
+
+          case 'v':
+            V_Draw();
+            Claw.write(90);
+            Right.write(90);
+            Left.write(90);
+            Base.write(90);
             break;
 
           case '?':

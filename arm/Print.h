@@ -2,6 +2,7 @@
 #define PRINT_H
 
 void Straight_Draw();
+void V_Draw();
 void sewrite();
 void seread();
 

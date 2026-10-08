@@ -20,6 +20,8 @@ double R,Z,r;
 extern double x,y,z;        
 extern double q1,q2,q3;
 
+bool state;
+
 void sewrite(){
   if(!(x==0&&y==0)){
     q1=atan2(y,x)*180.0/M_PI;
@@ -66,16 +68,28 @@ void seread(){
 }
 
 void Straight_Draw(){
-  // 画一条直线: (80,20,100) -> (22,78,100)
-  // 只改 x 和 y, 高度 z=100 保持不变 (两个坐标变化)
-  // 实测: Right 91~99, Left 60.0~60.8, 全程可达, 每步约 1mm
-  XYZ_Move(37,33,60);
+  state=1;
+  XYZ_Move(10,60,55);
   delay(2000);
   Claw.write(130);
 
-  XYZ_Move(37,33,50);   
+  XYZ_Move(10,60,50);   
   delay(2000);
   
-  XYZ_Move(-21,46,50);      // 再直线画出去
-  Claw.write(90);
+  XYZ_Move(70,100,50);  
+  delay(2000);
+}
+
+void V_Draw(){
+  state=1;
+  XYZ_Move(-30,120,55);
+  delay(2000);
+  Claw.write(130);
+
+  XYZ_Move(-30,120,50);
+  delay(2000);
+  XYZ_Move(0,50,50);
+  delay(2000);
+  XYZ_Move(30,120,50);
+  delay(2000);
 }
