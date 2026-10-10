@@ -20,6 +20,8 @@ double R,Z,r;
 extern double x,y,z;        
 extern double q1,q2,q3;
 
+double point[5][3];
+
 bool state;
 
 void sewrite(){
@@ -69,20 +71,20 @@ void seread(){
 
 void Straight_Draw(){
   state=1;
-  XYZ_Move(10,60,55);
+  XYZ_Move(0,100,53);
   delay(2000);
   Claw.write(130);
 
-  XYZ_Move(10,60,50);   
+  XYZ_Move(0,100,50);   
   delay(2000);
   
-  XYZ_Move(70,100,50);  
+  XYZ_Move(0,40,50);  
   delay(2000);
 }
 
 void V_Draw(){
   state=1;
-  XYZ_Move(-30,120,55);
+  XYZ_Move(-30,120,53);
   delay(2000);
   Claw.write(130);
 
@@ -92,4 +94,32 @@ void V_Draw(){
   delay(2000);
   XYZ_Move(30,120,50);
   delay(2000);
+}
+
+void Point_Record(){
+  byte i=0;
+  while(i<5){
+    Joystick_Control();
+    if(Serial.available()){
+      if(Serial.read()=='1'){
+        seread();
+        point[i][0]=x;
+        point[i][1]=y;
+        point[i][2]=z;
+        i++;
+      }
+      Serial.read();
+    }
+    delay(50);
+  }
+}
+
+void Point_S_Replay(){
+  state=1;
+  byte i=0;
+  while(i<5){
+    XYZ_Move(point[i][0],point[i][1],point[i][2]);
+    i++;
+    delay(500);
+  }
 }

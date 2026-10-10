@@ -120,20 +120,32 @@ void Serial_Communication(){
             Serial.println(F("执行成功!"));
             break;
 
+          case 'P':
           case 'p':
             Straight_Draw();
             Claw.write(90);
             Right.write(90);
             Left.write(90);
-             Base.write(90);
+            Base.write(90);
             break;
 
+          case 'V':
           case 'v':
             V_Draw();
             Claw.write(90);
             Right.write(90);
             Left.write(90);
             Base.write(90);
+            break;
+
+          case 'R':
+          case 'r':
+            Point_Record();
+            break;
+
+          case 'M':
+          case 'm':
+            Point_S_Replay();
             break;
 
           case '?':

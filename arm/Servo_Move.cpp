@@ -87,14 +87,15 @@ void Claw_Move(byte target,byte MoveSpeed){
   Claw.write(target);
 }
 
-void XYZ_Move(const int t_x,const int t_y,const int t_z){
+void XYZ_Move(const double t_x,const double t_y,const double t_z){
+  seread();
   if(!state)return;
   double x0=x, y0=y, z0=z;
   double dist=sqrt((t_x-x0)*(t_x-x0)+(t_y-y0)*(t_y-y0)+(t_z-z0)*(t_z-z0));
   int n=(int)(dist+0.5);                      
   if(n<1)n=1;
   if(n>200)n=200;
-  n*=0.75;
+  n*=0.5;
   double step_x=(t_x-x0)/n;
   double step_y=(t_y-y0)/n;
   double step_z=(t_z-z0)/n;
@@ -107,11 +108,12 @@ void XYZ_Move(const int t_x,const int t_y,const int t_z){
         while(temp!='2'){
           if(Serial.available()){
             temp=Serial.read();
+            Serial.read();
             if(temp=='3'){
               state=0;
               Claw.write(90);
               Right.write(90);
-             Left.write(90);
+              Left.write(90);
               Base.write(90);
               return;
             }
