@@ -8,9 +8,6 @@
 #include "Button_Control.h"
 #include "Print.h"
 
-#define LEFT_BUTTON 5
-#define RIGHT_BUTTON 4
-
 Servo Claw;
 Servo Left;
 Servo Right;
@@ -34,9 +31,6 @@ void setup() {
   Right.write(90);
   Left.write(90);
   Base.write(90);
-
-  pinMode(LEFT_BUTTON,INPUT_PULLUP);
-  pinMode(RIGHT_BUTTON,INPUT_PULLUP);
 
   Speed=5;
 
@@ -145,7 +139,12 @@ void Serial_Communication(){
 
           case 'M':
           case 'm':
-            Point_S_Replay();
+            Point_l_Replay();
+            break;
+
+          case 'N':
+          case 'n':
+            Point_s_Replay();
             break;
 
           case '?':
