@@ -113,7 +113,6 @@ void Point_Record(){
         point[i][1]=y;
         point[i][2]=z;
         times[i]=time;
-        time=0;
         i++;
       }
       Serial.readStringUntil('\n');
