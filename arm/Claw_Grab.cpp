@@ -21,7 +21,7 @@ void Claw_A(){
   Left_Move(15,Speed);
   Right_Move(140,Speed);
   delay(500);
-  Claw_Move(140,3);
+  Claw_Move(130,3);
   delay(500);
 
   Right_Move(100,Speed);
@@ -56,7 +56,7 @@ void Claw_B(){
   Left_Move(30,Speed);
   Right_Move(120,Speed);
   delay(500);
-  Claw_Move(140,3);
+  Claw_Move(130,3);
   delay(500);
 
   Right_Move(100,Speed);
@@ -91,7 +91,7 @@ void Claw_C(){
   Left_Move(15,Speed);
   Right_Move(150,Speed);
   delay(500);
-  Claw_Move(140,3);
+  Claw_Move(130,3);
   delay(500);
 
   Right_Move(100,Speed);

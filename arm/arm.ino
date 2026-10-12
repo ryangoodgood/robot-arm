@@ -210,7 +210,7 @@ int Num_Read(String &line,byte &i){
   int num=0;
   while(line[i]>='0'&&line[i]<='9'){
     num*=10;
-    num+=(int)line[i]-'0';
+    num+=(int)(line[i]-'0');
     i++;
   }
   return num;

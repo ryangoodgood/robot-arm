@@ -20,10 +20,10 @@ double R,Z,r;
 extern double x,y,z;        
 extern double q1,q2,q3;
 
-int point[5][3];              // 示教点坐标(mm), int 省内存
+int point[5][3];
 int times[5];
 
-double m[5][3];               // 二阶导, 必须是浮点
+double m[5][3];
 int h[4];
 double dec[3];
 

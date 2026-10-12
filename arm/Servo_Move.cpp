@@ -131,7 +131,7 @@ void XYZ_Move(const double t_x,const double t_y,const double t_z){
     y=y0+step_y*i;
     z=z0+step_z*i;
     sewrite();
-//    delay(50);
+    delay(10);
 //    Serial.print(F("Base:"));
 //    Serial.println(q1);
 //    Serial.print(F("Right:"));
