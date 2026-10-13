@@ -15,8 +15,7 @@ extern Servo Left;
 extern Servo Right;
 extern Servo Base;
 
-double R,Z,r;
-
+extern double R,Z,r;
 extern double x,y,z;        
 extern double q1,q2,q3;
 
@@ -28,51 +27,6 @@ int h[4];
 double dec[3];
 
 bool state;
-
-void sewrite(){
-  if(!(x==0&&y==0)){
-    q1=atan2(y,x)*180.0/M_PI;
-  }
-  if(q1<0.0||q1>180.0){
-    return;
-  }
-  R=hypot(x,y);
-  Z=z-H;
-  r=hypot(R,Z);
-  if(r>L1+L2){
-    return;
-  }
-
-  double cos_d=(r*r-L1*L1-L2*L2)/(2.0*L1*L2);
-  if(cos_d>1.0)cos_d=1.0;
-  if(cos_d<-1.0)cos_d=-1.0;
-  double dd=acos(cos_d);
-  double th=atan2(Z,R);
-  double a1=th+atan2(L2*sin(dd),L1+L2*cos(dd));
-  double a2=a1-dd;
-  q2=180.0-a1*180.0/M_PI;
-  q3=90.0+a2*180.0/M_PI;
-  if(q2<0.0||q2>180.0||q3<0.0||q3>LEFT_MAX){
-    return;
-  }
-  Base.write(q1);
-  Right.write(q2);
-  Left.write(q3);
-}
-
-void seread(){
-  int a=Base.read(),b=Right.read(),c=Left.read();
-
-  double t1=a*M_PI/180.0;
-  double a1=(180.0-b)*M_PI/180.0;
-  double a2=(c-90.0)*M_PI/180.0;
-
-  double Rh=L1*cos(a1)+L2*cos(a2);
-  double Zh=L1*sin(a1)+L2*sin(a2);
-  x=Rh*cos(t1);
-  y=Rh*sin(t1);
-  z=Zh+H;
-}
 
 void Straight_Draw(){
   state=1;
@@ -184,7 +138,7 @@ void Point_s_Replay(){
   Left.write(90);
   Base.write(90);
   delay(3000);
-  const double STEP=1.5;
+  const double step=1.5;
   double px=point_where(0,times[0]),py=point_where(1,times[0]),pz=point_where(2,times[0]);
   XYZ_Move(px,py,pz);
   double acc=0;
@@ -192,7 +146,7 @@ void Point_s_Replay(){
     if(!state)return;
     double cx=point_where(0,t), cy=point_where(1,t), cz=point_where(2,t);
     acc+=sqrt((cx-px)*(cx-px)+(cy-py)*(cy-py)+(cz-pz)*(cz-pz));
-    if(acc>=STEP){
+    if(acc>=step){
       XYZ_Move(cx,cy,cz);
       acc=0;
     }

@@ -8,7 +8,5 @@ void Point_l_Replay();
 void Point_s_Replay();
 void data_handling(byte j);
 double point_where(byte j,double t);
-void sewrite();
-void seread();
 
 #endif
