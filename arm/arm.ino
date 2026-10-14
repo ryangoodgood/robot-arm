@@ -117,14 +117,11 @@ void Serial_Communication(){
           case 'P':
           case 'p':
             Straight_Draw();
-            Claw.write(90);
-            XYZ_Move(0,80,140);
             break;
 
           case 'V':
           case 'v':
             V_Draw();
-            XYZ_Move(0,80,140);
             break;
 
           case 'R':
@@ -233,4 +230,9 @@ void text_print(){
   Serial.println(F("按钮2:录制动作"));
   Serial.println(F("按钮3:回放动作"));
   Serial.println(F("按钮4:重置位置"));
+  Serial.println(F("'P',直线绘制"));
+  Serial.println(F("'V',V绘制"));
+  Serial.println(F("'R',五点录制"));
+  Serial.println(F("'M',五点折线绘制"));
+  Serial.println(F("'N',五点曲线绘制"));
 }

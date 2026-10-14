@@ -39,25 +39,35 @@ void Straight_Draw(){
   
   XYZ_Move(0,40,50);  
   delay(2000);
+
+  Claw.write(90);
+  XYZ_Move(0,80,140);
 }
 
 void V_Draw(){
   state=1;
-  XYZ_Move(-30,120,53);
+  XYZ_Move(-50,60,54);
   delay(2000);
   Claw.write(130);
-
-  XYZ_Move(-30,120,50);
   delay(2000);
+
+  XYZ_Move(-50,60,50);
+  
+  delay(2000);
+  XYZ_Move(0,130,50);
+  delay(2000);
+  
   XYZ_Move(0,50,50);
   delay(2000);
-  XYZ_Move(30,120,50);
-  delay(2000);
+
+  Claw.write(90);
+  XYZ_Move(0,80,140);
 }
 
 void Point_Record(){
   byte i=0;
   int time=0;
+  Serial.println(F("五点录制开始"));
   while(i<5){
     Joystick_Control();
     if(Serial.available()){
@@ -84,6 +94,7 @@ void Point_l_Replay(){
   Base.write(90);
   delay(3000);
   byte i=0;
+  Serial.println(F("五点折线绘制开始"));
   while(i<5){
     XYZ_Move(point[i][0],point[i][1],point[i][2]);
     i++;
@@ -124,6 +135,7 @@ double point_where(byte j,double t){
 
 void Point_s_Replay(){
   state=1;
+  Serial.println(F("五点曲线绘制开始"));
   for(byte i=1;i<=4;i++){
     h[i-1]=times[i]-times[i-1];
     if(h[i-1]<1){

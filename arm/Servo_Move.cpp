@@ -130,9 +130,9 @@ void sewrite(){
   if(q2<0.0||q2>180.0||q3<0.0||q3>LEFT_MAX){
     return;
   }
-  Base.write(q1);
   Right.write(q2);
   Left.write(q3);
+  Base.write(q1);
 }
 
 void seread(){
@@ -154,7 +154,7 @@ void XYZ_Move(const double t_x,const double t_y,const double t_z){
   if(!state)return;
   double x0=x, y0=y, z0=z;
   double dist=sqrt((t_x-x0)*(t_x-x0)+(t_y-y0)*(t_y-y0)+(t_z-z0)*(t_z-z0));
-  int n=(int)(dist+0.5)*0.5;               
+  int n=(int)(dist+0.5);               
   if(n<1)n=1;
   if(n>200)n=200;  
   double step_x=(t_x-x0)/n;
@@ -193,18 +193,15 @@ void XYZ_Move(const double t_x,const double t_y,const double t_z){
     y=y0+step_y*i;
     z=z0+step_z*i;
     sewrite();
-    delay(25);
-//    Serial.print(F("Base:"));
-//    Serial.println(q1);
-//    Serial.print(F("Right:"));
-//    Serial.println(q2);
-//    Serial.print(F("Left:"));
-//    Serial.println(q3);
+    delay(10);
   }
 
   Serial.print(F("到达 ("));
-  Serial.print(t_x); Serial.print(F(","));
-  Serial.print(t_y); Serial.print(F(","));
-  Serial.print(t_z); Serial.println(F(")"));
+  Serial.print(t_x);
+  Serial.print(F(","));
+  Serial.print(t_y);
+  Serial.print(F(","));
+  Serial.print(t_z);
+  Serial.println(F(")"));
   seread();
 }
