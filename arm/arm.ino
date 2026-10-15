@@ -196,7 +196,6 @@ void Serial_Communication(){
         }
       }
       Serial.println("");
-      text_print();
   }
 }
 
@@ -506,15 +505,6 @@ void XYZ_Move(const double t_x,const double t_y,const double t_z){
     sewrite();
     delay(10);
   }
-
-  Serial.print(F("到达 ("));
-  Serial.print(t_x);
-  Serial.print(F(","));
-  Serial.print(t_y);
-  Serial.print(F(","));
-  Serial.print(t_z);
-  Serial.println(F(")"));
-  seread();
 }
 
 void Claw_A(){
@@ -758,6 +748,7 @@ void Point_Record(){
     time++;
     delay(50);
   }
+  Serial.println(F("五点录制结束"));
 }
 
 void Point_l_Replay(){
@@ -771,6 +762,7 @@ void Point_l_Replay(){
     i++;
     delay(500);
   }
+  Serial.println(F("五点折线绘制结束"));
 }
 
 void data_handling(byte j){
@@ -782,7 +774,7 @@ void data_handling(byte j){
   double aa[3]={0, 1.0*h[1]/(h[1]+h[2]), 1.0*h[2]/(h[2]+h[3])};
   double cc[3]={1.0*h[1]/(h[0]+h[1]), 1.0*h[2]/(h[1]+h[2]), 0};
   double cp[3],dp[3];
-  cp[0]=cc[0]/2.0;         
+  cp[0]=cc[0]/2.0;
   dp[0]=dec[0]/2.0;
   for(byte i=1;i<3;i++){
     double temp=2.0-aa[i]*cp[i-1];
@@ -830,9 +822,10 @@ void Point_s_Replay(){
       XYZ_Move(cx,cy,cz);
       acc=0;
     }
-    px=cx; 
-    py=cy; 
+    px=cx;
+    py=cy;
     pz=cz;
   }
   if(state)XYZ_Move(point_where(0,times[4]),point_where(1,times[4]),point_where(2,times[4]));
+  Serial.println(F("五点曲线绘制结束"));
 }
