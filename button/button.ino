@@ -19,21 +19,21 @@ void loop() {
     delay(30);
     while(!digitalRead(Button_1));
     delay(30);
-    Serial.println("1");
+    Serial.print("1");
   }else if(!digitalRead(Button_2)){
     delay(30);
     while(!digitalRead(Button_2));
     delay(30);
-    Serial.println("2");
+    Serial.print("2");
   }else if(!digitalRead(Button_3)){
     delay(30);
     while(!digitalRead(Button_3));
     delay(30);
-    Serial.println("3");
+    Serial.print("3");
   }else if(!digitalRead(Button_4)){
     delay(30);
     while(!digitalRead(Button_4));
     delay(30);
-    Serial.println("4");
+    Serial.print("4");
   }
 }

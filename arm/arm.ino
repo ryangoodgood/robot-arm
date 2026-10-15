@@ -1,6 +1,7 @@
 #include<Servo.h>
 #include<WString.h>
 #include<math.h>
+#include<SoftwareSerial.h>
 
 #define Left_Joystick_x A0
 #define Left_Joystick_y A1
@@ -36,7 +37,7 @@ byte Left_State[255];
 byte Right_State[255];
 byte Claw_State[255];
 
-int point[5][3];
+double point[5][3];
 int times[5];
 
 double m[5][3];
@@ -45,9 +46,12 @@ double dec[3];
 
 bool state;
 
+SoftwareSerial buttonSerial(10,11);
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  buttonSerial.begin(9600);
   Record_Clear();
 
   Claw.attach(6);
@@ -72,130 +76,128 @@ void loop() {
 }
 
 void Init(){
-  Claw.write(90);
-  Right.write(90);
-  Left.write(90);
-  Base.write(90);
+  Claw_Move(90,5);
+  Right_Move(90,5);
+  Left_Move(90,5);
+  Base_Move(90,5);
 }
 
-void Serial_Communication(){
+void Serial_Communication(){ 
   String line;
   char temp;
+  if(buttonSerial.available()){
+    byte Button_temp=(byte)(buttonSerial.read()-'0');
+    if(Button_temp>=1&&Button_temp<=4){
+      Button_Control(Button_temp);
+    }
+  }
   if(Serial.available()){
-      line=Serial.readStringUntil('\n');
-      line.trim();
-      if(line.length()==1){
-        temp=line[0];
-        switch(temp){
-          case '1':
-          case '2':
-          case '3':
-          case '4':
-            Button_Control((byte)(temp-'0'));
-            break;
+    line=Serial.readStringUntil('\n');
+    line.trim();
+    if(line.length()==1){
+      temp=line[0];
+      switch(temp){
+        case 'O':
+        case 'o':
+          Claw.write(0);
+          Serial.println(F("恭喜你,爪子打开了!"));
+          break;
 
-          case 'O':
-          case 'o':
-            Claw.write(0);
-            Serial.println(F("恭喜你,爪子打开了!"));
-            break;
+        case 'S':
+        case 's':
+          Claw.write(115);
+          Serial.println(F("恭喜你,爪子关上了!"));
+          break;
 
-          case 'S':
-          case 's':
-            Claw.write(115);
-            Serial.println(F("恭喜你,爪子关上了!"));
-            break;
+        case 'H':
+        case 'h':
+          Speed+=1;
+          if(Speed>30){
+            Speed=30;
+            Serial.println(F("太快了舵机要受不了了!!!"));
+          }
+          Serial.print(F("目前速度为:"));
+          Serial.println(Speed);
+          break;
 
-          case 'H':
-          case 'h':
-            Speed+=1;
-            if(Speed>30){
-              Speed=30;
-              Serial.println(F("太快了舵机要受不了了!!!"));
-            }
-            Serial.print(F("目前速度为:"));
-            Serial.println(Speed);
-            break;
+        case 'L':
+        case 'l':
+          Speed-=1;
+          if(Speed<=0){
+            Speed=1;
+            Serial.println(F("Speed不能小于等于0!!!"));
+          }
+          Serial.print(F("目前速度为:"));
+          Serial.println(Speed);
+          break;
 
-          case 'L':
-          case 'l':
-            Speed-=1;
-            if(Speed<=0){
-              Speed=1;
-              Serial.println(F("Speed不能小于等于0!!!"));
-            }
-            Serial.print(F("目前速度为:"));
-            Serial.println(Speed);
-            break;
+        case 'A':
+        case 'a':
+          Claw_A(); 
+          Serial.println(F("执行成功!"));
+          break;
 
-          case 'A':
-          case 'a':
-            Claw_A(); 
-            Serial.println(F("执行成功!"));
-            break;
+        case 'B':
+        case 'b':
+          Claw_B(); 
+          Serial.println(F("执行成功!"));
+          break;
 
-          case 'B':
-          case 'b':
-            Claw_B(); 
-            Serial.println(F("执行成功!"));
-            break;
+        case 'C':
+        case 'c':
+          Claw_C(); 
+          Serial.println(F("执行成功!"));
+          break;
 
-          case 'C':
-          case 'c':
-            Claw_C(); 
-            Serial.println(F("执行成功!"));
-            break;
+        case 'P':
+        case 'p':
+          Straight_Draw();
+          break;
 
-          case 'P':
-          case 'p':
-            Straight_Draw();
-            break;
+        case 'V':
+        case 'v':
+          V_Draw();
+          break;
 
-          case 'V':
-          case 'v':
-            V_Draw();
-            break;
+        case 'R':
+        case 'r':
+          Point_Record();
+          break;
 
-          case 'R':
-          case 'r':
-            Point_Record();
-            break;
+        case 'M':
+        case 'm':
+          Point_l_Replay();
+          break;
 
-          case 'M':
-          case 'm':
-            Point_l_Replay();
-            break;
+        case 'N':
+        case 'n':
+          Point_s_Replay();
+          break;
 
-          case 'N':
-          case 'n':
-            Point_s_Replay();
-            break;
-
-          case '?':
-            Out_Put();
-            break;
+        case '?':
+          Out_Put();
+          break;
             
-          case '!':
-            seread();
-            Serial.print(F("x:"));
-            Serial.println(x);
-            Serial.print(F("y:"));
-            Serial.println(y);
-            Serial.print(F("z:"));
-            Serial.println(z);
-            break;
+        case '!':
+          seread();
+          Serial.print(F("x:"));
+          Serial.println(x);
+          Serial.print(F("y:"));
+          Serial.println(y);
+          Serial.print(F("z:"));
+          Serial.println(z);
+          break;
 
-          default:
-            Serial.println(F("ERROR,输入有问题"));
-            break;
+        default:
+          Serial.println(F("ERROR,输入有问题"));
+          break;
             
-        }
-      }else{
-        if(!PWM_Out(line)){
-          Serial.println(F("Error,请输入一个字符"));
-        }
       }
-      Serial.println("");
+    }else{
+      if(!PWM_Out(line)){
+        Serial.println(F("Error,请输入一个字符"));
+      }
+    }
   }
 }
 
@@ -420,7 +422,7 @@ void sewrite(){
   R=hypot(x,y);
   Z=abs(z-H);
   r=hypot(R,Z);
-  if(r>L1+L2){
+  if(r>L1+L2||r<1e-3){
     return;
   }
 
@@ -478,14 +480,13 @@ void XYZ_Move(const double t_x,const double t_y,const double t_z){
   double step_z=(t_z-z0)/n;
 
   for(int i=1;i<=n;i++){
-    if(Serial.available()){
-      char temp=Serial.read();
+    if(buttonSerial.available()){
+      char temp=buttonSerial.read();
       if(temp=='1'){
         temp=0;
         while(temp!='2'){
-          if(Serial.available()){
-            temp=Serial.read();
-            Serial.readStringUntil('\n');
+          if(buttonSerial.available()){
+            temp=buttonSerial.read();
             if(temp=='3'){
               state=0;
               Init();
@@ -669,8 +670,8 @@ void Record(){
     Claw_State[total_time]=Claw.read();
     total_time++;
     delay(50);
-    if(Serial.available()){
-      if(Serial.read()=='2'){
+    if(buttonSerial.available()){
+      if(buttonSerial.read()=='2'){
         break;
       }
     }
@@ -693,6 +694,7 @@ void Replay(){
 }
 
 void Straight_Draw(){
+  Serial.println(F("绘制开始"));
   state=1;
   XYZ_Move(0,100,53);
   delay(2000);
@@ -706,9 +708,11 @@ void Straight_Draw(){
 
   Claw.write(90);
   XYZ_Move(0,80,140);
+  Serial.println(F("绘制结束"));
 }
 
 void V_Draw(){
+  Serial.println(F("绘制开始"));
   state=1;
   XYZ_Move(-50,60,54);
   delay(2000);
@@ -726,6 +730,7 @@ void V_Draw(){
 
   Claw.write(90);
   XYZ_Move(0,80,140);
+  Serial.println(F("绘制结束"));
 }
 
 void Point_Record(){
@@ -734,16 +739,18 @@ void Point_Record(){
   Serial.println(F("五点录制开始"));
   while(i<5){
     Joystick_Control();
-    if(Serial.available()){
-      if(Serial.read()=='1'){
+    if(buttonSerial.available()){
+      if(buttonSerial.read()=='1'){
         seread();
         point[i][0]=x;
         point[i][1]=y;
         point[i][2]=z;
         times[i]=time;
         i++;
+        Serial.print(F("第"));
+        Serial.print(i);
+        Serial.println(F("点已记录"));
       }
-      Serial.readStringUntil('\n');
     }
     time++;
     delay(50);
@@ -752,9 +759,9 @@ void Point_Record(){
 }
 
 void Point_l_Replay(){
+  Serial.println(F("五点折线绘制开始"));
   state=1;
   Init();
-  Serial.println(F("五点折线绘制开始"));
   delay(3000);
   byte i=0;
   while(i<5){
@@ -797,8 +804,8 @@ double point_where(byte j,double t){
 }
 
 void Point_s_Replay(){
-  state=1;
   Serial.println(F("五点曲线绘制开始"));
+  state=1;
   for(byte i=1;i<=4;i++){
     h[i-1]=times[i]-times[i-1];
     if(h[i-1]<1){
