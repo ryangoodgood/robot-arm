@@ -2,6 +2,7 @@
 #include<WString.h>
 #include<math.h>
 #include<SoftwareSerial.h>
+#include<Arduino.h>
 
 #define Left_Joystick_x A0
 #define Left_Joystick_y A1
@@ -12,6 +13,7 @@
 #define L1 80
 #define L2 80
 #define LEFT_MAX 100
+#define DRAW_Z 50
 
 Servo Claw;
 Servo Left;
@@ -37,16 +39,45 @@ byte Left_State[255];
 byte Right_State[255];
 byte Claw_State[255];
 
-double point[5][3];
+double point[5][2];
 int times[5];
 
-double m[5][3];
+double m[5][2];
 int h[4];
 double dec[3];
 
 bool state;
 
 SoftwareSerial buttonSerial(10,11);
+
+void Serial_Communication();
+bool PWM_Out(String &line);
+int Num_Read(String &line,byte &i);
+void Out_Put();
+void text_print();
+void Joystick_Control();
+void Init();
+void Base_Move(byte target,byte MoveSpeed);
+void Left_Move(byte target,byte MoveSpeed);
+void Right_Move(byte target,byte MoveSpeed);
+void Claw_Move(byte target,byte MoveSpeed);
+void sewrite();
+void seread();
+void XYZ_Move(const double t_x,const double t_y,const double t_z);
+void Claw_A();
+void Claw_B();
+void Claw_C();
+void Button_Control(byte read);
+void Record_Clear();
+void Record();
+void Replay();
+void Straight_Draw();
+void V_Draw();
+void Point_Record();
+void Point_l_Replay();
+void data_handling(byte j);
+double point_where(byte j,double t);
+void Point_s_Replay();
 
 void setup() {
   // put your setup code here, to run once:
@@ -61,7 +92,7 @@ void setup() {
 
   Init();
 
-  Speed=5;
+  Speed=3;
 
   seread();
 
@@ -76,10 +107,10 @@ void loop() {
 }
 
 void Init(){
-  Claw_Move(90,5);
-  Right_Move(90,5);
-  Left_Move(90,5);
-  Base_Move(90,5);
+  Claw.write(90);
+  Right.write(90);
+  Left.write(90);
+  Base.write(90);
 }
 
 void Serial_Communication(){ 
@@ -504,7 +535,7 @@ void XYZ_Move(const double t_x,const double t_y,const double t_z){
     y=y0+step_y*i;
     z=z0+step_z*i;
     sewrite();
-    delay(10);
+    delay(20);
   }
 }
 
@@ -696,7 +727,7 @@ void Replay(){
 void Straight_Draw(){
   Serial.println(F("绘制开始"));
   state=1;
-  XYZ_Move(0,100,53);
+  XYZ_Move(0,100,60);
   delay(2000);
   Claw.write(130);
 
@@ -714,7 +745,7 @@ void Straight_Draw(){
 void V_Draw(){
   Serial.println(F("绘制开始"));
   state=1;
-  XYZ_Move(-50,60,54);
+  XYZ_Move(-50,60,60);
   delay(2000);
   Claw.write(130);
   delay(2000);
@@ -736,15 +767,42 @@ void V_Draw(){
 void Point_Record(){
   byte i=0;
   int time=0;
+  double tx,ty;
   Serial.println(F("五点录制开始"));
+  Init();
+  seread();
+  tx=x;
+  ty=y;
+  z=DRAW_Z;
+  sewrite();
+  delay(2000);
+  Claw.write(130);
   while(i<5){
-    Joystick_Control();
+    Lx=analogRead(Left_Joystick_x);
+    Ly=analogRead(Left_Joystick_y);
+    if(Lx<=200){
+      tx-=2;
+    }else if(Lx>=800){
+      tx+=2;
+    }
+    if(Ly<=200){
+      ty+=2;
+    }else if(Ly>=800){
+      ty-=2;
+    }
+    x=tx;
+    y=ty;
+    z=DRAW_Z;
+    sewrite();
+    seread();
+    if(fabs(x-tx)>3||fabs(y-ty)>3){
+      tx=x;
+      ty=y;
+    }
     if(buttonSerial.available()){
       if(buttonSerial.read()=='1'){
-        seread();
         point[i][0]=x;
         point[i][1]=y;
-        point[i][2]=z;
         times[i]=time;
         i++;
         Serial.print(F("第"));
@@ -755,6 +813,7 @@ void Point_Record(){
     time++;
     delay(50);
   }
+  Claw_Move(90,3);
   Serial.println(F("五点录制结束"));
 }
 
@@ -762,13 +821,21 @@ void Point_l_Replay(){
   Serial.println(F("五点折线绘制开始"));
   state=1;
   Init();
-  delay(3000);
-  byte i=0;
+  delay(1000);
+  XYZ_Move(0,60,DRAW_Z+10);
+  delay(1000);
+  Claw.write(130);
+  delay(1000);
+  XYZ_Move(point[0][0],point[0][1],DRAW_Z+10);
+  delay(1000);
+  XYZ_Move(point[0][0],point[0][1],DRAW_Z);
+  byte i=1;
   while(i<5){
-    XYZ_Move(point[i][0],point[i][1],point[i][2]);
+    XYZ_Move(point[i][0],point[i][1],DRAW_Z);
     i++;
     delay(500);
   }
+  Claw_Move(90,3);
   Serial.println(F("五点折线绘制结束"));
 }
 
@@ -778,8 +845,8 @@ void data_handling(byte j){
   for(byte i=1;i<=3;i++){
     dec[i-1]=6.0/(h[i-1]+h[i])*((point[i+1][j]-point[i][j])/(double)h[i]-(point[i][j]-point[i-1][j])/(double)h[i-1]);
   }
-  double aa[3]={0, 1.0*h[1]/(h[1]+h[2]), 1.0*h[2]/(h[2]+h[3])};
-  double cc[3]={1.0*h[1]/(h[0]+h[1]), 1.0*h[2]/(h[1]+h[2]), 0};
+  double aa[3]={0,1.0*h[1]/(h[1]+h[2]),1.0*h[2]/(h[2]+h[3])};
+  double cc[3]={1.0*h[1]/(h[0]+h[1]),1.0*h[2]/(h[1]+h[2]),0};
   double cp[3],dp[3];
   cp[0]=cc[0]/2.0;
   dp[0]=dec[0]/2.0;
@@ -806,33 +873,43 @@ double point_where(byte j,double t){
 void Point_s_Replay(){
   Serial.println(F("五点曲线绘制开始"));
   state=1;
+  times[0]=0;
+  for(byte i=1;i<5;i++){
+    times[i]=times[i-1]+(int)(hypot(point[i][0]-point[i-1][0],point[i][1]-point[i-1][1])+0.5);
+  }
   for(byte i=1;i<=4;i++){
     h[i-1]=times[i]-times[i-1];
     if(h[i-1]<1){
       h[i-1]=1;
     }
   }
-  for(byte j=0;j<3;j++){
+  for(byte j=0;j<2;j++){
     data_handling(j);
   }
   Init();
-  delay(3000);
-  const double step=1.5;
-  double px=point_where(0,times[0]),py=point_where(1,times[0]),pz=point_where(2,times[0]);
-  XYZ_Move(px,py,pz);
+  delay(1000);
+  const double step=1;
+  double px=point_where(0,times[0]),py=point_where(1,times[0]);
+  XYZ_Move(0,60,DRAW_Z+10);
+  delay(1000);
+  Claw.write(130);
+  delay(1000);
+  XYZ_Move(point[0][0],point[0][1],DRAW_Z+10);
+  delay(1000);
+  XYZ_Move(point[0][0],point[0][1],DRAW_Z);
   double acc=0;
   for(double t=times[0]+0.1;t<=times[4];t+=0.1){
     if(!state)return;
-    double cx=point_where(0,t), cy=point_where(1,t), cz=point_where(2,t);
-    acc+=sqrt((cx-px)*(cx-px)+(cy-py)*(cy-py)+(cz-pz)*(cz-pz));
+    double cx=point_where(0,t), cy=point_where(1,t);
+    acc+=sqrt((cx-px)*(cx-px)+(cy-py)*(cy-py));
     if(acc>=step){
-      XYZ_Move(cx,cy,cz);
+      XYZ_Move(cx,cy,DRAW_Z);
       acc=0;
     }
     px=cx;
     py=cy;
-    pz=cz;
   }
-  if(state)XYZ_Move(point_where(0,times[4]),point_where(1,times[4]),point_where(2,times[4]));
+  if(state)XYZ_Move(point_where(0,times[4]),point_where(1,times[4]),DRAW_Z);
+  Claw_Move(90,3);
   Serial.println(F("五点曲线绘制结束"));
 }
